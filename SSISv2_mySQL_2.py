@@ -292,43 +292,48 @@ global button_frame
 
 class Student:
     def add():
-        id = id_entry.get()
-        n1 = name_entry.get() 
-        g1 = gender_entry.get() 
-        c1 = course_entry.get() 
-        y1 = yrlvl_entry.get() 
-        a1 = age_entry.get() 
-        e1 = email_entry.get()
-        if id =='' or n1 =='' or g1 =='' or c1 =='' or y1 =='' or a1 =='' or e1=='': 
-            tkm.showinfo("SSIS Messsage!", "Fill-in missing details!")
-            return
-        else:
-            conn = mysql.connector.connect(
-            host='127.0.0.1',
-            user='root',
-            password='Dytuanhanz15',
-            database='SSIS'
+        try:
+                
+            id = id_entry.get()
+            n1 = name_entry.get() 
+            g1 = gender_entry.get() 
+            c1 = course_entry.get() 
+            y1 = yrlvl_entry.get() 
+            a1 = age_entry.get() 
+            e1 = email_entry.get()
+            if id =='' or n1 =='' or g1 =='' or c1 =='' or y1 =='' or a1 =='' or e1=='': 
+                tkm.showinfo("SSIS Messsage!", "Fill-in missing details!")
+                return
+            else:
+                conn = mysql.connector.connect(
+                host='127.0.0.1',
+                user='root',
+                password='Dytuanhanz15',
+                database='SSIS'
 
-        )
-            cursor = conn.cursor()
-            table_create_query = '''CREATE TABLE IF NOT EXISTS 
-                                Student_Data(id_num INT, stud_name TEXT, gender TEXT, course TEXT, 
-                                year_lvl TEXT, age INT, email TEXT)'''  
-            cursor.execute(table_create_query)
-          
-          # Insert Data
-            data_insert_query = '''INSERT INTO Student_Data(id_num, stud_name, gender, course, 
-                                year_lvl, age, email) VALUES (%s, %s, %s, %s, %s, %s, %s)'''
-            data_insert_tuple = (id,n1,g1,c1,y1,a1,e1)
+            )
+                cursor = conn.cursor()
+                table_create_query = '''CREATE TABLE IF NOT EXISTS 
+                                    Student_Data(id_num INT, stud_name TEXT, gender TEXT, course TEXT, 
+                                    year_lvl TEXT, age INT, email TEXT)'''  
+                cursor.execute(table_create_query)
+            
+            # Insert Data
+                data_insert_query = '''INSERT INTO Student_Data(id_num, stud_name, gender, course, 
+                                    year_lvl, age, email) VALUES (%s, %s, %s, %s, %s, %s, %s)'''
+                data_insert_tuple = (id,n1,g1,c1,y1,a1,e1)
 
-            cursor.execute(data_insert_query, data_insert_tuple)
-            conn.commit()
+                cursor.execute(data_insert_query, data_insert_tuple)
+                conn.commit()
 
+                Student.refresh_frame()
+                Student.clearAll()
+                tkm.showinfo("SSIS Messsage!", "Data saved successfully!")
+                conn.close()
+        except:
+            tkm.showinfo("SSIS Messsage!", "Data already exists!")
             Student.refresh_frame()
-            Student.clearAll()
-            tkm.showinfo("SSIS Messsage!", "Data saved successfully!")
-            conn.close()
-    
+
     def edit(event=None):
         conn = mysql.connector.connect(
             host='127.0.0.1',
@@ -595,30 +600,35 @@ class Student:
 
     # Functions for Course Detail Frame
     def add_course():
-        cc = cc_entry.get()
-        cname = courname_entry.get()
-        if cc =='' or cname=='': 
-            tkm.showinfo("SSIS Messsage!", "Fill-in missing details!")
-            return
-        else:
-            conn = mysql.connector.connect(
-            host='127.0.0.1',
-            user='root',
-            password='Dytuanhanz15',
-            database='SSIS'
-        )        
-            cursor = conn.cursor()
-            course_insert_query = '''INSERT INTO Course_Data(course_code, course) VALUES (%s, %s)'''
-            course_insert_tuple = (cc,cname)
+        try:
+            cc = cc_entry.get()
+            cname = courname_entry.get()
+            if cc =='' or cname=='': 
+                tkm.showinfo("SSIS Messsage!", "Fill-in missing details!")
+                return
+            else:
+                conn = mysql.connector.connect(
+                host='127.0.0.1',
+                user='root',
+                password='Dytuanhanz15',
+                database='SSIS'
+            )        
+                cursor = conn.cursor()
+                course_insert_query = '''INSERT INTO Course_Data(course_code, course) VALUES (%s, %s)'''
+                course_insert_tuple = (cc,cname)
 
-            cursor.execute(course_insert_query, course_insert_tuple)
-            conn.commit()
+                cursor.execute(course_insert_query, course_insert_tuple)
+                conn.commit()
 
-            Student.refresh_frame()
+                Student.refresh_frame()
+                COURSE_CODE.set('')
+                COURSE_NAME.set('')
+                tkm.showinfo("SSIS Messsage!", "Data saved successfully!")
+                conn.close()
+        except:
+            tkm.showinfo("SSIS Messsage!", "Data already exists!")
             COURSE_CODE.set('')
-            COURSE_NAME.set('')
-            tkm.showinfo("SSIS Messsage!", "Data saved successfully!")
-            conn.close()
+            COURSE_NAME.set('')            
 
     def edit_course(event=None):
         COURSE_CODE.set('')
@@ -630,6 +640,7 @@ class Student:
         courname_entry.insert(0, values[1])
 
     def save_course():
+    
         conn = mysql.connector.connect(
             host='127.0.0.1',
             user='root',
@@ -640,6 +651,7 @@ class Student:
         item = course_table.focus()
         init_code = course_table.item(item)['values'][0]
 
+
         cc = cc_entry.get()
         cname = courname_entry.get() 
 
@@ -647,22 +659,23 @@ class Student:
             tkm.showinfo("SSIS Messsage!", "Fill-in missing details!")
             return
         else:
-          
-          # Update Data
-          data_update_query = '''UPDATE Student_Data SET course = %s WHERE course = %s'''
-          data_update_tuple = (cc,init_code)
+        
+        # Update Data
+            data_update_query = '''UPDATE Student_Data SET course = %s WHERE course = %s'''
+            data_update_tuple = (cc,init_code)
 
-          course_update_query = '''UPDATE Course_Data SET course_code = %s, course = %s WHERE course_code = %s'''
-          course_update_tuple = (cc,cname,init_code)
-          
-          cursor.execute(data_update_query, data_update_tuple)
-          cursor.execute(course_update_query, course_update_tuple)
-          tkm.showinfo("SSIS Messsage!", "Data saved successfully!")          
-          conn.commit()
+            course_update_query = '''UPDATE Course_Data SET course_code = %s, course = %s WHERE course_code = %s'''
+            course_update_tuple = (cc,cname,init_code)
+            
+            cursor.execute(data_update_query, data_update_tuple)
+            cursor.execute(course_update_query, course_update_tuple)
+            tkm.showinfo("SSIS Messsage!", "Data saved successfully!")          
+            conn.commit()
         Student.refresh_frame()
         COURSE_CODE.set('')
         COURSE_NAME.set('')
-
+        
+        
     def delete_course():
         conn = mysql.connector.connect(
             host='127.0.0.1',
